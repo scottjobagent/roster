@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roster — Recruiters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef;--ink:#1f3a52;--ink-2:#2b4d68;--ink-3:#16293a;--clay:#b4502e;--clay-2:#9c4326;
+  --card:#ffffff;--text:#23303a;--muted:#6f7a85;--line:#e7e1d6;--good:#3f7d5b;--warn:#c08a2d;--danger:#b23b34;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.serif{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em;margin:0}
+a{color:inherit;text-decoration:none}
+.app{display:flex;min-height:100vh}
+/* sidebar */
+.sidebar{width:236px;flex:0 0 236px;background:var(--ink);color:#cdd9e4;display:flex;flex-direction:column;padding:26px 18px}
+.brand{font-family:'Fraunces',serif;font-size:25px;font-weight:600;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.brand .dot{width:12px;height:12px;border-radius:50%;background:var(--clay);display:inline-block}
+.brand small{display:block;font-family:Inter,sans-serif;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#7e98ad;margin-top:3px}
+.nav{margin-top:34px;display:flex;flex-direction:column;gap:3px}
+.nav a{padding:10px 13px;border-radius:9px;color:#aebecd;font-weight:500;font-size:14px;display:flex;align-items:center;gap:11px}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav a.active{background:var(--ink-2);color:#fff}
+.nav .ico{width:18px;text-align:center;opacity:.9}
+.side-foot{margin-top:auto;font-size:12.5px;color:#7e98ad;border-top:1px solid rgba(255,255,255,.09);padding-top:16px}
+.side-foot b{color:#cdd9e4;font-weight:600}
+/* main */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 38px 0}
+.topbar .crumb{color:var(--muted);font-size:13px;font-weight:500}
+.topbar .crumb a:hover{color:var(--clay)}
+.content{padding:20px 38px 48px;max-width:1180px;width:100%}
+/* buttons */
+.btn{font-family:Inter,sans-serif;font-size:14px;font-weight:600;border:none;border-radius:10px;padding:11px 18px;cursor:pointer;transition:.12s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--clay);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--clay-2)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--ink);background:#fff}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-dark:hover{background:var(--ink-2)}
+.btn-danger{background:#fff;color:var(--danger);border:1px solid #e7cfcc}
+.btn-danger:hover{background:#fbf1f0;border-color:var(--danger)}
+.btn-sm{padding:8px 13px;font-size:13px;border-radius:9px}
+/* trial */
+.trial{background:linear-gradient(100deg,#fbf3ec,#f7ede3);border:1px solid #ecd9c6;border-left:4px solid var(--clay);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;margin:8px 0 26px}
+.trial .badge{background:var(--clay);color:#fff;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:20px;white-space:nowrap}
+.trial p{margin:0;font-size:14px;color:#5a4636}
+.trial b{color:#3d2c1e}
+/* page head */
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;gap:16px}
+.page-head h1{font-size:30px;color:var(--ink)}
+.page-head .sub{color:var(--muted);font-size:14px;margin-top:5px}
+/* pills */
+.pill{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 10px;border-radius:20px;white-space:nowrap;display:inline-block}
+.pill.active,.pill.matched{background:#e7f1ea;color:var(--good)}
+.pill.sourcing{background:#fbf0dc;color:var(--warn)}
+.pill.paused,.pill.declined{background:#eee9e0;color:var(--muted)}
+.pill.scheduled{background:#e6eef5;color:var(--ink-2)}
+.pill.hired{background:#dff0e6;color:var(--good)}
+/* dashboard grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.rcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;cursor:pointer;transition:.14s;display:flex;flex-direction:column}
+.rcard:hover{border-color:#d8cdbb;box-shadow:0 8px 24px -14px rgba(31,58,82,.28);transform:translateY(-2px)}
+.rcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.rcard h3{font-size:19px;color:var(--ink)}
+.rcard .loc{color:var(--muted);font-size:13px;margin-top:3px}
+.stats{display:flex;gap:8px;margin-top:18px}
+.stat{flex:1;background:#faf8f3;border:1px solid var(--line);border-radius:10px;padding:11px 8px;text-align:center}
+.stat .n{font-family:'Fraunces',serif;font-size:23px;font-weight:600;color:var(--ink);line-height:1}
+.stat .l{font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:.02em}
+.rcard .foot{margin-top:16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted)}
+.rcard .foot .go{color:var(--clay);font-weight:600}
+.sourcing-line{margin-top:16px;font-size:13px;color:var(--warn);display:flex;align-items:center;gap:8px}
+.spinner{width:13px;height:13px;border:2px solid #ecdcc0;border-top-color:var(--warn);border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+.spinner.lg{width:30px;height:30px;border-width:3px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.new-card{border:1.5px dashed #d3c8b6;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);min-height:210px;cursor:pointer;border-radius:14px;transition:.14s}
+.new-card:hover{border-color:var(--clay);color:var(--clay);background:#fcf7f2}
+.new-card .plus{font-size:34px;line-height:1;font-weight:300}
+.new-card span{font-weight:600}
+/* generic card */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+input[type=text],input[type=time],textarea,select{width:100%;font-family:Inter,sans-serif;font-size:14.5px;color:var(--text);background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 13px;outline:none;transition:.12s}
+input:focus,textarea:focus,select:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(180,80,46,.12)}
+textarea{resize:vertical;min-height:120px;line-height:1.55}
+/* wizard */
+.steps{display:flex;align-items:center;gap:0;margin:6px 0 28px}
+.step{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:600;font-size:14px}
+.step .num{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;background:#fff}
+.step.active{color:var(--ink)}
+.step.active .num{background:var(--clay);border-color:var(--clay);color:#fff}
+.step.done .num{background:var(--good);border-color:var(--good);color:#fff}
+.step.done{color:var(--ink)}
+.step-sep{flex:1;height:1.5px;background:var(--line);margin:0 14px;min-width:24px}
+.field{margin-bottom:20px}
+.row{display:flex;gap:14px}
+.row>*{flex:1}
+.wizard-foot{display:flex;justify-content:space-between;margin-top:26px}
+.mh-list{display:flex;flex-direction:column;gap:9px}
+.mh-item{display:flex;gap:8px;align-items:center}
+.mh-item input{flex:1}
+.mh-item .x{color:var(--muted);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:7px}
+.mh-item .x:hover{color:var(--danger);background:#fbf1f0}
+.add-link{color:var(--clay);font-weight:600;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:4px}
+.jd-box{position:relative}
+.jd-gen{position:absolute;top:9px;right:9px}
+.jd-drafting{display:flex;align-items:center;gap:9px;color:var(--clay);font-size:13.5px;font-weight:600;padding:14px}
+/* availability */
+.avail{display:flex;flex-direction:column;gap:9px}
+.day-row{display:flex;align-items:center;gap:14px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;background:#fff}
+.day-row.off{background:#faf8f3;color:var(--muted)}
+.day-name{width:48px;font-weight:600;color:var(--ink)}
+.day-row.off .day-name{color:var(--muted)}
+.day-times{display:flex;align-items:center;gap:9px;margin-left:auto}
+.day-times input{width:118px}
+.day-row.off .day-times{opacity:.4;pointer-events:none}
+/* toggle */
+.toggle{position:relative;width:42px;height:24px;flex:0 0 42px}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .track{position:absolute;inset:0;background:#d8d0c2;border-radius:20px;transition:.16s;cursor:pointer}
+.toggle .track:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.16s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked+.track{background:var(--clay)}
+.toggle input:checked+.track:before{transform:translateX(18px)}
+/* review */
+.review-block{padding:16px 0;border-bottom:1px solid var(--line)}
+.review-block:last-child{border-bottom:none}
+.review-block .k{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:6px}
+.review-block .v{color:var(--text)}
+.review-block ul{margin:6px 0 0;padding-left:18px}
+.tag{display:inline-block;background:#f1ece2;color:var(--ink);border:1px solid var(--line);font-size:12.5px;font-weight:500;padding:5px 11px;border-radius:20px;margin:0 6px 6px 0}
+/* recruiter detail layout */
+.detail{display:grid;grid-template-columns:1fr 318px;gap:22px;align-items:start}
+.cand-list{display:flex;flex-direction:column;gap:14px}
+.cand-row{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:17px 19px;cursor:pointer;transition:.13s;display:flex;align-items:center;gap:18px}
+.cand-row:hover{border-color:#d8cdbb;box-shadow:0 6px 20px -14px rgba(31,58,82,.3)}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--ink-2);color:#fff;font-weight:600;font-family:'Fraunces',serif;display:flex;align-items:center;justify-content:center;font-size:17px;flex:0 0 46px}
+.cand-meta{flex:1;min-width:0}
+.cand-meta h4{font-size:16.5px;color:var(--ink);margin-bottom:2px}
+.cand-meta .sub{font-size:13px;color:var(--muted)}
+.match{width:150px;flex:0 0 150px}
+.match .mtop{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px}
+.match .mtop b{color:var(--ink);font-family:'Fraunces',serif;font-size:14px}
+.bar{height:8px;background:#ece6db;border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#c9a24a,#b4502e)}
+.side-panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;position:sticky;top:20px}
+.side-panel h3{font-size:18px;color:var(--ink);margin-bottom:3px}
+.side-panel .pl{font-size:13px;color:var(--muted);margin-bottom:16px}
+.kv{margin-bottom:14px}
+.kv .k{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;margin-bottom:4px}
+.kv .v{font-size:14px;color:var(--text)}
+.src-status{background:#faf8f3;border:1px solid var(--line);border-radius:11px;padding:13px;font-size:13px;color:var(--text);margin-top:6px}
+.src-status .dotg{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:7px}
+/* candidate page */
+.cand-layout{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;align-items:start}
+.resume h2{font-size:24px;color:var(--ink)}
+.resume .rsub{color:var(--muted);font-size:14px;margin:3px 0 18px}
+.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin:20px 0 10px}
+.exp{padding:13px 0;border-bottom:1px solid var(--line)}
+.exp:last-child{border-bottom:none}
+.exp .r{font-weight:600;color:var(--ink)}
+.exp .o{font-size:13.5px;color:var(--muted);margin:2px 0 5px}
+.exp .n{font-size:13.5px}
+.resume-file{display:flex;align-items:center;gap:11px;background:#faf8f3;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:8px}
+.resume-file .fi{width:34px;height:34px;border-radius:8px;background:#e9e2d5;display:flex;align-items:center;justify-content:center;color:var(--clay);font-weight:700;font-size:12px}
+.resume-file .fn{flex:1;font-size:13.5px}
+.resume-file a{color:var(--clay);font-weight:600;font-size:13px}
+.actions-bar{display:flex;gap:10px;margin-top:20px}
+.actions-bar .btn{flex:1;justify-content:center}
+/* messaging */
+.chat{display:flex;flex-direction:column;height:520px}
+.chat-head{display:flex;align-items:center;gap:11px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.chat-head .avatar{width:38px;height:38px;font-size:15px;flex-basis:38px}
+.chat-body{flex:1;overflow-y:auto;padding:16px 2px;display:flex;flex-direction:column;gap:11px}
+.msg{max-width:78%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.45}
+.msg.recruiter{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+.msg.candidate{align-self:flex-start;background:#f0ebe1;color:var(--text);border-bottom-left-radius:4px}
+.msg .who{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;opacity:.7;margin-bottom:3px;font-weight:700}
+.chat-input{display:flex;gap:9px;padding-top:13px;border-top:1px solid var(--line)}
+.chat-input input{flex:1}
+.banner-scheduled{background:#e6eef5;border:1px solid #cdddea;color:var(--ink-2);border-radius:11px;padding:13px 16px;font-size:14px;font-weight:500;margin-top:16px;display:flex;align-items:center;gap:10px}
+/* interview room */
+.room{background:var(--ink-3);min-height:100vh;display:flex;flex-direction:column;color:#e9eef3}
+.room-top{display:flex;align-items:center;justify-content:space-between;padding:16px 26px;border-bottom:1px solid rgba(255,255,255,.08)}
+.room-top .rt-title{font-family:'Fraunces',serif;font-size:18px;color:#fff}
+.room-top .rt-sub{font-size:12.5px;color:#8ba0b3}
+.timer{font-family:'Fraunces',serif;font-size:17px;color:#fff;background:rgba(255,255,255,.08);padding:6px 14px;border-radius:9px;display:flex;align-items:center;gap:8px}
+.rec-dot{width:9px;height:9px;border-radius:50%;background:#e0533e;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.room-body{flex:1;display:grid;grid-template-columns:1fr 340px;gap:0}
+.stage{padding:26px;display:flex;flex-direction:column;gap:18px}
+.tiles{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:380px}
+.tile{background:linear-gradient(160deg,#21384a,#16242f);border-radius:16px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(255,255,255,.06)}
+.tile .pic{width:96px;height:96px;border-radius:50%;background:#2f4a60;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:34px;color:#cbd9e5}
+.tile .name{position:absolute;left:14px;bottom:13px;background:rgba(0,0,0,.4);padding:5px 11px;border-radius:8px;font-size:13px;color:#fff}
+.tile .muted-ic{position:absolute;right:14px;bottom:13px;background:rgba(0,0,0,.4);padding:6px;border-radius:8px;font-size:13px;display:none}
+.tile.is-muted .muted-ic{display:block}
+.controls{display:flex;justify-content:center;gap:14px;padding:6px 0 2px}
+.ctrl{width:54px;height:54px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#e9eef3;font-size:20px;cursor:pointer;transition:.13s;display:flex;align-items:center;justify-content:center}
+.ctrl:hover{background:rgba(255,255,255,.18)}
+.ctrl.off{background:#5a2622;color:#ffb4ab}
+.ctrl.end{background:#c0392b;color:#fff;width:64px;border-radius:30px}
+.ctrl.end:hover{background:#a93226}
+.ctrl-wrap{display:flex;flex-direction:column;align-items:center;gap:7px}
+.ctrl-wrap small{font-size:11px;color:#8ba0b3}
+/* notes panel */
+.notes{background:#1b2c3a;border-left:1px solid rgba(255,255,255,.08);padding:22px;display:flex;flex-direction:column}
+.notes h3{color:#fff;font-size:17px;margin-bottom:3px}
+.notes .nsub{font-size:12px;color:#8ba0b3;margin-bottom:16px}
+.notes textarea{flex:1;background:#16242f;border:1px solid rgba(255,255,255,.1);color:#e9eef3;min-height:200px}
+.notes textarea:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(180,80,46,.2)}
+.privacy-note{background:rgba(180,80,46,.13);border:1px solid rgba(180,80,46,.32);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#e9cfc4;margin-top:14px;line-height:1.5}
+.privacy-note b{color:#fff}
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(20,30,40,.55);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.overlay.show{display:flex}
+.modal{background:#fff;color:var(--text);border-radius:16px;padding:28px;width:100%;max-width:460px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4)}
+.modal h3{font-size:21px;color:var(--ink);margin-bottom:8px}
+.modal p{color:var(--muted);font-size:14px;margin:0 0 18px}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.stars{display:flex;gap:6px;font-size:30px;color:#d8cfbf;margin:4px 0 4px}
+.stars span{cursor:pointer;transition:.1s}
+.stars span.on{color:#d99b27}
+.disp{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
+.disp label{border:1px solid var(--line);border-radius:9px;padding:9px 14px;font-size:13.5px;font-weight:500;cursor:pointer}
+.disp input{display:none}
+.disp input:checked+span{color:var(--clay)}
+.disp label:has(input:checked){border-color:var(--clay);background:#fcf3ee;color:var(--clay)}
+.empty{text-align:center;color:var(--muted);padding:50px 20px;background:var(--card);border:1px dashed var(--line);border-radius:14px}
+@media(max-width:860px){.detail,.cand-layout{grid-template-columns:1fr}.room-body{grid-template-columns:1fr}.notes{border-left:none;border-top:1px solid rgba(255,255,255,.08)}}
+@media(max-width:720px){.sidebar{display:none}.content,.topbar{padding-left:20px;padding-right:20px}.tiles{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="side"></div>
+  <main class="main">
+    <div class="topbar"><div class="crumb">Workspace &middot; Recruiters</div></div>
+    <div class="content">
+      <div id="trial"></div>
+      <div class="page-head">
+        <div>
+          <h1>Your Recruiters</h1>
+          <div class="sub">Each Recruiter runs one role end to end &mdash; sourcing, scheduling, interviewing, notes.</div>
+        </div>
+        <a class="btn btn-primary" href="create.html"><span style="font-size:17px;line-height:1">&#65291;</span> New Recruiter</a>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </main>
+</div>
+<script>
+/* Roster — shared data layer + helpers (mock, sessionStorage) */
+const Roster=(function(){
+  const KEY='roster_state_v1';
+  function defaultAvail(){const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];const o={};days.forEach((d,i)=>{o[d]={on:i<5,start:'09:00',end:'17:00'}});return o;}
+  function seedCandidates(){
+    return {
+      r1:[
+        {id:'c1',name:'Maria Delgado',score:94,status:'matched',headline:'CNA · 4 yrs in assisted living',location:'Phoenix, AZ',resume:'maria_delgado_resume.pdf',
+         skills:['CNA Certified','Patient Transfers','Med Reminders','Dementia Care','First Aid/CPR'],
+         experience:[{role:'Care Aide',org:'Sunrise Senior Living',years:'2021–Present',note:'Lead aide on a 14-resident memory-care wing.'},{role:'Home Health Aide',org:'Comfort Keepers',years:'2019–2021',note:'In-home support for 6 recurring clients.'}],
+         messages:[{from:'recruiter',text:'Hi Maria — your memory-care experience is a strong match for this role. Open to a short interview this week?'},{from:'candidate',text:'Yes, definitely. Mornings work best for me.'}]},
+        {id:'c2',name:'James Okoro',score:88,status:'matched',headline:'Caregiver · CPR certified',location:'Glendale, AZ',resume:'james_okoro_resume.pdf',
+         skills:['Personal Care','Mobility Support','CPR','Meal Prep'],
+         experience:[{role:'Caregiver',org:'BrightStar Care',years:'2020–Present',note:'One-on-one client care, 12-hr shifts.'}],
+         messages:[{from:'recruiter',text:'Hi James — thanks for your interest. Are you certified as a CNA, or working toward it?'}]},
+        {id:'c3',name:'Tasha Nguyen',score:81,status:'matched',headline:'Med tech · entry-level care',location:'Tempe, AZ',resume:'tasha_nguyen_resume.pdf',
+         skills:['Medication Aide','Vitals','Documentation','Empathy'],
+         experience:[{role:'Medication Aide',org:'Brookdale',years:'2022–Present',note:'Administer meds across two wings.'}],
+         messages:[]}
+      ],
+      r2:[],
+      r3:[
+        {id:'c4',name:'Sofía Ramírez',score:91,status:'matched',headline:'Bilingual CS rep · 3 yrs',location:'Remote · Austin, TX',resume:'sofia_ramirez_resume.pdf',
+         skills:['English/Spanish','Billing Support','Zendesk','De-escalation'],
+         experience:[{role:'Customer Service Rep',org:'Teleperformance',years:'2021–Present',note:'Bilingual healthcare queue, 95% CSAT.'}],
+         messages:[{from:'recruiter',text:'Hola Sofía — your bilingual healthcare background fits this role well. Free for a quick interview?'}]},
+        {id:'c5',name:'Daniel Cho',score:79,status:'scheduled',headline:'Call center · bilingual',location:'Remote · Phoenix, AZ',resume:'daniel_cho_resume.pdf',
+         skills:['English/Spanish','Inbound Calls','CRM','Scheduling'],
+         experience:[{role:'Support Agent',org:'Concentrix',years:'2020–2023',note:'Handled 60+ inbound calls/day.'}],
+         messages:[{from:'recruiter',text:'Hi Daniel — you’re booked for Thursday at 10:00 AM. Talk soon!'}]}
+      ]
+    };
+  }
+  function seed(){
+    return {
+      recruiters:[
+        {id:'r1',title:'Senior Care Aide',location:'Phoenix, AZ',status:'active',trial:false,interviews:8,scheduled:3,hires:2,
+         jd:'We’re hiring a Senior Care Aide to support daily living for residents in an assisted-living community. You’ll help with mobility, meals, medication reminders, and companionship — bringing patience and warmth to every shift.',
+         musthaves:['CNA certification (or willing to certify)','1+ year direct care experience','Comfortable with lifting/transfers','Reliable transportation'],availability:defaultAvail()},
+        {id:'r2',title:'Warehouse Associate',location:'Dallas, TX',status:'sourcing',trial:true,interviews:0,scheduled:0,hires:0,
+         jd:'Pick, pack, and ship orders in a fast-paced distribution center. Operate handheld scanners, keep your zone organized, and hit daily throughput targets as part of a tight crew.',
+         musthaves:['Able to lift 50 lbs repeatedly','Available for early shifts','Forklift cert a plus'],availability:defaultAvail()},
+        {id:'r3',title:'Bilingual Call Center Rep',location:'Remote (US)',status:'active',trial:false,interviews:5,scheduled:2,hires:0,
+         jd:'Handle inbound customer calls in English and Spanish for a healthcare services line. Resolve billing and scheduling questions with empathy and accuracy.',
+         musthaves:['Fluent English + Spanish','Quiet home workspace','Customer service background'],availability:defaultAvail()}
+      ],
+      candidates:seedCandidates()
+    };
+  }
+  function get(){let s=sessionStorage.getItem(KEY);if(!s){const d=seed();sessionStorage.setItem(KEY,JSON.stringify(d));return d;}return JSON.parse(s);}
+  function save(s){sessionStorage.setItem(KEY,JSON.stringify(s));}
+  function reset(){sessionStorage.removeItem(KEY);}
+  function recruiter(id){return get().recruiters.find(r=>r.id===id);}
+  function updateRecruiter(id,patch){const s=get();const r=s.recruiters.find(x=>x.id===id);if(r)Object.assign(r,patch);save(s);return r;}
+  function candidate(rid,cid){return (get().candidates[rid]||[]).find(c=>c.id===cid);}
+  function updateCandidate(rid,cid,patch){const s=get();const c=(s.candidates[rid]||[]).find(x=>x.id===cid);if(c)Object.assign(c,patch);save(s);return c;}
+  function addRecruiter(r){const s=get();s.recruiters.push(r);if(!s.candidates[r.id])s.candidates[r.id]=[];save(s);return r;}
+  function qs(k){return new URLSearchParams(location.search).get(k);}
+  function esc(t){return (t==null?'':String(t)).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function initials(name){return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+  function sidebar(active){
+    return `<aside class="sidebar">
+      <div class="brand"><span class="dot"></span>Roster<small>Hiring, handled</small></div>
+      <nav class="nav">
+        <a href="index.html" class="${active==='recruiters'?'active':''}"><span class="ico">&#9638;</span>Recruiters</a>
+        <a href="index.html" class="${active==='schedule'?'active':''}"><span class="ico">&#9719;</span>Schedule</a>
+        <a href="index.html" class="${active==='hires'?'active':''}"><span class="ico">&#9681;</span>Hires</a>
+        <a href="index.html" class="${active==='settings'?'active':''}"><span class="ico">&#9881;</span>Settings</a>
+      </nav>
+      <div class="side-foot">Signed in as<br><b>JobFairX</b><br>scott@jobfairx.com</div>
+    </aside>`;
+  }
+  return {get,save,reset,recruiter,updateRecruiter,candidate,updateCandidate,addRecruiter,defaultAvail,qs,esc,initials,sidebar};
+})();
+
+</script>
+<script>
+document.getElementById('side').innerHTML=Roster.sidebar('recruiters');
+const s=Roster.get(), E=Roster.esc;
+const trialR=s.recruiters.find(r=>r.trial);
+document.getElementById('trial').innerHTML = trialR ? `
+  <div class="trial">
+    <span class="badge">Free trial</span>
+    <p>Your first Recruiter &mdash; <b>${E(trialR.title)}</b> &mdash; books <b>5 interviews</b> before you pay a cent. <b>${5-Math.min(trialR.interviews,5)} to go.</b></p>
+  </div>` : '';
+document.getElementById('grid').innerHTML = s.recruiters.map(r=>{
+  const lbl=r.status==='sourcing'?'Sourcing':(r.status==='paused'?'Paused':'Active');
+  const body=r.status==='sourcing'
+    ? `<div class="sourcing-line"><span class="spinner"></span> Sourcing candidates&hellip; first matches in a few minutes</div>`
+    : `<div class="stats">
+         <div class="stat"><div class="n">${r.interviews}</div><div class="l">Interviews</div></div>
+         <div class="stat"><div class="n">${r.scheduled}</div><div class="l">Scheduled</div></div>
+         <div class="stat"><div class="n">${r.hires}</div><div class="l">Hires</div></div>
+       </div>`;
+  return `<div class="rcard" onclick="location.href='recruiter.html?r=${r.id}'">
+    <div class="top">
+      <div><h3>${E(r.title)}</h3><div class="loc">&#128205; ${E(r.location)}</div></div>
+      <span class="pill ${r.status}">${lbl}</span>
+    </div>${body}
+    <div class="foot"><span>${r.trial?'Free-trial Recruiter':'One Recruiter &middot; one role'}</span><span class="go">Open &rarr;</span></div>
+  </div>`;
+}).join('') + `
+  <div class="new-card" onclick="location.href='create.html'">
+    <div class="plus">&#65291;</div><span>New Recruiter</span>
+    <div style="font-size:12.5px">Hire for one more role</div>
+  </div>`;
+</script>
+</body>
+</html>
